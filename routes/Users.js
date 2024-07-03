@@ -1,19 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { Utilisateurs } = require("../models");
+const { validateToken } = require('../middlewares/AuthMiddleware');
+const {createUser, loginUser, getAuthenticatedUser } = require("../controllers/Users");
 
-router.get("/", (req, res) => {
-    res.json("hello world");
-});
-
-router.post("/", async (req, res) => {
-    const user = req.body;
-    try {
-        const newUser = await Utilisateurs.create(user);
-        res.json(newUser);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+router.post("/", createUser);
+router.post("/login", loginUser);
+router.get("/auth", validateToken, getAuthenticatedUser);
 
 module.exports = router;
