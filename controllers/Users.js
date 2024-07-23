@@ -6,13 +6,11 @@ const { sign } = require('jsonwebtoken');
 const createUser = async (req, res) => {
   const { Nom, Email, Mot_De_Passe } = req.body;
   try {
-      // Vérifier si le Nom existe déjà
       const existingUserByName = await Utilisateurs.findOne({ where: { Nom } });
       if (existingUserByName) {
           return res.status(400).json({ error: "Nom déjà pris" });
       }
 
-      // Vérifier si l'Email existe déjà
       const existingUserByEmail = await Utilisateurs.findOne({ where: { Email } });
       if (existingUserByEmail) {
           return res.status(400).json({ error: "Email déjà pris" });
@@ -32,7 +30,7 @@ const createUser = async (req, res) => {
 };
 
 //Connexion
-const failedAttempts = {}; // Suivi des tentatives d'auth
+const failedAttempts = {}; // Suivi des tentatives
 
 const MAX_FAILED_ATTEMPTS = [3, 4, 5];
 const LOCK_TIME = [5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000]; // 5, 15, 30 min
@@ -115,7 +113,7 @@ const logoutUser = async (req, res) => {
   res.json({ success: true, message: 'Déconnexion réussie' });
 };
 
-//Récupération de l'Utilisateur connecté
+//Récupération de l'Utilisateur co
 const getAuthenticatedUser = async (req, res) =>{
   res.json(req.utilisateur);
 }
@@ -150,12 +148,12 @@ const updateUser = async (req, res) => {
             return res.status(404).json({ error: "Utilisateur non trouvé" });
         }
 
-        // Hashage du nouveau mot de passe s'il est fourni
+        // Hashage du nouveau mdp
         if (Mot_De_Passe) {
             utilisateur.Mot_De_Passe = await bcrypt.hash(Mot_De_Passe, 10);
         }
 
-        // Mise à jour des champs nom et email s'ils sont fournis
+        // MAJ des champs nom et email s'ils sont fournis
         if (Nom) utilisateur.Nom = Nom;
         if (Email) utilisateur.Email = Email;
         
@@ -178,7 +176,7 @@ const deleteUser = async (req, res) => {
           return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
 
-      await utilisateur.destroy();  // Supprimer l'utilisateur trouvé
+      await utilisateur.destroy();  // Supprimer l'utilisateur
       res.json({ success: true, message: "Utilisateur supprimé avec succès" });
   } catch (error) {
       console.error("Erreur lors de la suppression de l'utilisateur:", error);
