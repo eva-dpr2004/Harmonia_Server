@@ -27,5 +27,12 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false,
   });
 
+  Utilisateurs.associate = (models) => {
+    Utilisateurs.hasMany(models.Animaux, {
+      foreignKey: 'Id_Utilisateur',
+      onDelete: 'CASCADE'
+    });
+  };
+
   return Utilisateurs;
 };
