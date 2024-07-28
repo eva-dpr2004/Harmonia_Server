@@ -1,6 +1,7 @@
 const { Utilisateurs } = require("../models");
 const bcrypt = require("bcrypt");
 const { sign } = require('jsonwebtoken');
+const { Op } = require("sequelize");
 
 //Inscription
 const createUser = async (req, res) => {
@@ -30,36 +31,47 @@ const createUser = async (req, res) => {
 };
 
 //Connexion
-const failedAttempts = {}; // Suivi des tentatives
+const failedAttempts = {}; 
 
 const MAX_FAILED_ATTEMPTS = [3, 4, 5];
-const LOCK_TIME = [5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000]; // 5, 15, 30 min
-
+const LOCK_TIME = [5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000]; 
 
 const loginUser = async (req, res) => {
-  const { Nom, Mot_De_Passe } = req.body;
+  const { NomOrEmail, Mot_De_Passe } = req.body;
 
   try {
-    const utilisateur = await Utilisateurs.findOne({ where: { Nom } });
+    let utilisateur;
+
+    if (NomOrEmail.includes('@')) {
+      utilisateur = await Utilisateurs.findOne({ where: { Email: NomOrEmail } });
+    } else {
+      utilisateur = await Utilisateurs.findOne({ where: { Nom: NomOrEmail } });
+    }
 
     if (!utilisateur) {
-      handleFailedAttempt(Nom);
+      handleFailedAttempt(NomOrEmail);
       return res.json({ error: "Utilisateur non existant" });
     }
 
-    if (isUserLocked(Nom)) {
-      const lockUntil = failedAttempts[Nom].lockUntil;
+    if (isUserLocked(NomOrEmail)) {
+      const lockUntil = failedAttempts[NomOrEmail].lockUntil;
       const lockTimeLeft = Math.round((lockUntil - Date.now()) / 1000); // in seconds
       return res.status(403).json({ error: `Compte verrouillé. Réessayez dans ${lockTimeLeft} secondes.` });
     }
 
     const match = await bcrypt.compare(Mot_De_Passe, utilisateur.Mot_De_Passe);
     if (!match) {
-      handleFailedAttempt(Nom);
-      return res.json({ error: "Mot de passe ou nom incorrect" });
+      handleFailedAttempt(NomOrEmail);
+      return res.json({ error: "Mot de passe incorrect" });
     }
 
-    resetFailedAttempts(Nom);
+    // Comparaison stricte pour Nom ou Email
+    if ((NomOrEmail.includes('@') && utilisateur.Email !== NomOrEmail) ||
+        (!NomOrEmail.includes('@') && utilisateur.Nom !== NomOrEmail)) {
+      return res.json({ error: "Utilisateur non existant" });
+    }
+
+    resetFailedAttempts(NomOrEmail);
     const accessToken = sign(
       { Nom: utilisateur.Nom, Id_Utilisateur: utilisateur.Id_Utilisateur }, 
       "importantsecret"
@@ -73,38 +85,40 @@ const loginUser = async (req, res) => {
 
     res.json({ success: true });
   } catch (error) {
-    res.json({ error: "Erreur lors de la connexion" });
+    console.error("Erreur lors de la connexion:", error);
+    res.status(500).json({ error: "Erreur interne du serveur", details: error.message });
   }
 };
 
-function handleFailedAttempt(Nom) {
-  if (!failedAttempts[Nom]) {
-    failedAttempts[Nom] = { attempts: 0, lockUntil: null };
+function handleFailedAttempt(NomOrEmail) {
+  if (!failedAttempts[NomOrEmail]) {
+    failedAttempts[NomOrEmail] = { attempts: 0, lockUntil: null };
   }
-  failedAttempts[Nom].attempts += 1;
+  failedAttempts[NomOrEmail].attempts += 1;
 
-  const attempts = failedAttempts[Nom].attempts;
+  const attempts = failedAttempts[NomOrEmail].attempts;
   if (attempts === MAX_FAILED_ATTEMPTS[0]) {
-    failedAttempts[Nom].lockUntil = Date.now() + LOCK_TIME[0];
+    failedAttempts[NomOrEmail].lockUntil = Date.now() + LOCK_TIME[0];
   } else if (attempts === MAX_FAILED_ATTEMPTS[1]) {
-    failedAttempts[Nom].lockUntil = Date.now() + LOCK_TIME[1];
+    failedAttempts[NomOrEmail].lockUntil = Date.now() + LOCK_TIME[1];
   } else if (attempts >= MAX_FAILED_ATTEMPTS[2]) {
-    failedAttempts[Nom].lockUntil = Date.now() + LOCK_TIME[2];
+    failedAttempts[NomOrEmail].lockUntil = Date.now() + LOCK_TIME[2];
   }
 }
 
-function isUserLocked(Nom) {
-  if (failedAttempts[Nom] && failedAttempts[Nom].lockUntil > Date.now()) {
+function isUserLocked(NomOrEmail) {
+  if (failedAttempts[NomOrEmail] && failedAttempts[NomOrEmail].lockUntil > Date.now()) {
     return true;
   }
   return false;
 }
 
-function resetFailedAttempts(Nom) {
-  if (failedAttempts[Nom]) {
-    failedAttempts[Nom] = { attempts: 0, lockUntil: null };
+function resetFailedAttempts(NomOrEmail) {
+  if (failedAttempts[NomOrEmail]) {
+    failedAttempts[NomOrEmail] = { attempts: 0, lockUntil: null };
   }
 }
+
 
 //Déconnexion
 const logoutUser = async (req, res) => {
