@@ -33,6 +33,15 @@ const createAnimal = async (req, res) => {
     }
 };
 
-module.exports = {
-    createAnimal
+const getAnimalByUserId = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const animaux = await Animaux.findAll({ where: { Id_Utilisateur: id } });
+        res.status(200).json(animaux);
+    } catch (error) {
+        console.error("Erreur lors de la récupération des animaux:", error);
+        res.status(500).json({ error: "Erreur interne du serveur", details: error.message });
+    }
 };
+
+module.exports = { createAnimal, getAnimalByUserId };
