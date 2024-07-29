@@ -13,6 +13,14 @@ const createAnimal = async (req, res) => {
         const decoded = jwt.verify(token, 'importantsecret');
         const Id_Utilisateur = decoded.Id_Utilisateur;
 
+        const animalCount = await Animaux.count({
+            where: { Id_Utilisateur: Id_Utilisateur }
+        });
+
+        if (animalCount >= 50) {
+            return res.status(400).json({ error: "Vous ne pouvez pas ajouter plus de 50 animaux." });
+        }
+
         const newAnimal = await Animaux.create({
             Nom,
             Date_De_Naissance,
@@ -45,7 +53,6 @@ const getAnimalByUserId = async (req, res) => {
 };
 
 const updateAnimal = async (req, res) => {
-
 } 
 
 const deleteAnimal = async (req, res) => {
@@ -58,6 +65,5 @@ const deleteAnimal = async (req, res) => {
         res.status(500).json({ error: "Erreur interne du serveur", details: error.message });
     }
 };
-
 
 module.exports = { createAnimal, getAnimalByUserId, updateAnimal, deleteAnimal };
