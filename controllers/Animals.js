@@ -53,7 +53,42 @@ const getAnimalByUserId = async (req, res) => {
 };
 
 const updateAnimal = async (req, res) => {
-} 
+    const { id } = req.params;
+    const { Nom, Date_De_Naissance, Date_Adoption, Espece, Race, Sexe, Poids, Habitat } = req.body;
+    const token = req.cookies.accessToken;
+
+    if (!token) {
+        return res.status(401).json({ error: "Utilisateur non authentifié" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, 'importantsecret');
+        const Id_Utilisateur = decoded.Id_Utilisateur;
+
+        const animal = await Animaux.findOne({
+            where: {
+                Id_Animal: id,
+                Id_Utilisateur: Id_Utilisateur
+            }
+        });
+
+        if (!animal) {
+            return res.status(404).json({ error: "Animal non trouvé" });
+        }
+
+        await Animaux.update(
+            { Nom, Date_De_Naissance, Date_Adoption, Espece, Race, Sexe, Poids, Habitat },
+            { where: { Id_Animal: id } }
+        );
+
+        const updatedAnimal = await Animaux.findOne({ where: { Id_Animal: id } });
+
+        res.status(200).json({ success: true, message: "Animal mis à jour avec succès", animal: updatedAnimal });
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour de l'animal:", error);
+        res.status(500).json({ error: "Erreur interne du serveur", details: error.message });
+    }
+};
 
 const deleteAnimal = async (req, res) => {
     const { id } = req.params;
