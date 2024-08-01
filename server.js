@@ -17,6 +17,9 @@ app.use("/auth", usersRouter);
 const animalsRouter = require("./routes/Animals");
 app.use("/animals", animalsRouter);
 
+const activitiesRouter = require("./routes/Activities");
+app.use("/activities", activitiesRouter);
+
 // PORT
 db.sequelize.sync().then(() => {
     app.listen(3001, () => {
