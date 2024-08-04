@@ -1,3 +1,4 @@
+const { Op } = require('sequelize'); 
 const { Activites, Animaux } = require('../models');
 
 const ajoutActivite = async (req, res) => {
@@ -19,6 +20,19 @@ const ajoutActivite = async (req, res) => {
     const animal = await Animaux.findOne({ where: { Id_Animal: animalId } });
     if (!animal) {
       return res.status(404).json({ error: "Animal not found" });
+    }
+
+    const activitiesCount = await Activites.count({
+      where: {
+        Id_Animal: animalId,
+        Date: date
+      }
+    });
+
+    const maxActivitiesPerDay = 10; 
+
+    if (activitiesCount >= maxActivitiesPerDay) {
+      return res.status(400).json({ error: `Limite d'activités atteinte pour cet animal aujourd'hui.` });
     }
 
     const newActivity = await Activites.create({
@@ -56,4 +70,24 @@ const getActivitesByUserId = async (req, res) => {
   }
 };
 
-module.exports = { ajoutActivite, getActivitesByUserId };
+const deleteActivitiesById = async (req, res) => {
+  const { activitiesId } = req.params;
+  console.log(`Reçu une demande de suppression pour l'activité ID: ${activitiesId}`);
+
+  try {
+    const activity = await Activites.findByPk(activitiesId);
+    if (!activity) {
+      console.log('Activité non trouvée');
+      return res.status(404).json({ error: "Activité non trouvée" });
+    }
+
+    await activity.destroy();
+    console.log('Activité supprimée avec succès');
+    res.status(200).json({ success: true, message: 'Activité supprimée avec succès' });
+  } catch (error) {
+    console.error('Erreur lors de la suppression de l\'activité:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur', details: error.message });
+  }
+};
+
+module.exports = { ajoutActivite, getActivitesByUserId, deleteActivitiesById };
