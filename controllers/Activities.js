@@ -23,7 +23,6 @@ const cron = require('node-cron');
       return res.status(404).json({ error: "Animal not found" });
     }
 
-    // Vérifiez si une activité avec les mêmes heures existe déjà pour cet animal à cette date
     const existingActivity = await Activites.findOne({
       where: {
         Id_Animal: animalId,
@@ -51,7 +50,6 @@ const cron = require('node-cron');
       return res.status(400).json({ error: `Limite d'activités atteinte pour cet animal aujourd'hui.` });
     }
 
-    // Créez l'activité si aucune activité identique n'existe
     const newActivity = await Activites.create({
       Id_Animal: animalId,
       Nom_Animal: animal.Nom,

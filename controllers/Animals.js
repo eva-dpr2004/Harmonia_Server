@@ -52,6 +52,8 @@ const getAnimalByUserId = async (req, res) => {
     }
 };
 
+let modificationsTracker = {};
+
 const updateAnimal = async (req, res) => {
     const { id } = req.params;
     const { Nom, Date_De_Naissance, Date_Adoption, Espece, Race, Sexe, Poids, Habitat } = req.body;
@@ -76,9 +78,24 @@ const updateAnimal = async (req, res) => {
             return res.status(404).json({ error: "Animal non trouvé" });
         }
 
-        await Animaux.update(
-            { Nom, Date_De_Naissance, Date_Adoption, Espece, Race, Sexe, Poids, Habitat },
-            { where: { Id_Animal: id } }
+        const today = new Date().toISOString().split('T')[0]; // Date actuelle sans l'heure
+        const key = `${id}-${today}`; // Clé unique pour l'animal et la date
+
+        // Initialiser le compteur de modifications pour l'animal s'il n'existe pas
+        if (!modificationsTracker[key]) {
+            modificationsTracker[key] = 0;
+        }
+
+        // Vérifier si l'animal a déjà été modifié 3 fois aujourd'hui
+        if (modificationsTracker[key] >= 3) {
+            return res.status(400).json({ error: "Vous ne pouvez pas modifier les informations d'un animal plus de 3 fois par jour." });
+        }
+
+        // Incrémenter le compteur de modifications
+        modificationsTracker[key] += 1;
+
+        await animal.update(
+            { Nom, Date_De_Naissance, Date_Adoption, Espece, Race, Sexe, Poids, Habitat }
         );
 
         const updatedAnimal = await Animaux.findOne({ where: { Id_Animal: id } });
@@ -89,6 +106,7 @@ const updateAnimal = async (req, res) => {
         res.status(500).json({ error: "Erreur interne du serveur", details: error.message });
     }
 };
+
 
 const deleteAnimal = async (req, res) => {
     const { id } = req.params;
