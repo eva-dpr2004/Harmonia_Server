@@ -11,7 +11,8 @@ router.post("/logout", logoutUser);
 
 router.get('/auth', validateToken, getAuthenticatedUser)
 
-router.get("/basicinfo/:id", validateToken, getBasicInfo);
+// router.get("/basicinfo/:id", validateToken, getBasicInfo);
+router.get("/basicinfo/5", getBasicInfo);
 
 router.put("/updateuser/:id", validateToken, updateUser);
 
