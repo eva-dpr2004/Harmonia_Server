@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const { Activites, Animaux } = require('../models');
 const cron = require('node-cron');
 
-  const ajoutActivite = async (req, res) => {
+const ajoutActivite = async (req, res) => {
   const { animalId, date, debutActivite, finActivite } = req.body;
 
   const debutDate = new Date(`1970-01-01T${debutActivite}Z`);
@@ -36,7 +36,6 @@ const cron = require('node-cron');
       return res.status(400).json({ error: 'Une activité avec ces heures existe déjà pour cet animal à cette date.' });
     }
 
-    // Limite d'activités par jour
     const activitiesCount = await Activites.count({
       where: {
         Id_Animal: animalId,

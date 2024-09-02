@@ -1,13 +1,12 @@
 const { Utilisateurs } = require("../models");
 //const bcrypt = require("bcrypt");
+const { Op } = require("sequelize");
 const bcrypt = require('bcryptjs');
 const { sign } = require('jsonwebtoken');
 const validator = require('validator');
-const { Op } = require("sequelize");
 
 //Inscription
 const createUser = async (req, res) => {
-  // Extraire les données de la requête
   const { Nom, Email, Mot_De_Passe } = req.body;
 
   const sanitizedNom = validator.escape(Nom.trim());
@@ -21,7 +20,6 @@ const createUser = async (req, res) => {
   }
 
   try {
-    // Vérifier si le nom ou l'email existent déjà
     const existingUserByName = await Utilisateurs.findOne({ where: { Nom: sanitizedNom } });
     if (existingUserByName) {
       return res.status(400).json({ error: "Nom déjà pris" });
@@ -40,7 +38,6 @@ const createUser = async (req, res) => {
       Mot_De_Passe: hash,
     });
 
-    // Réponse de succès
     res.json({ success: true, message: "Utilisateur créé avec succès", user: newUser });
   } catch (error) {
     console.error("Erreur lors de la création de l'utilisateur:", error);
@@ -51,17 +48,15 @@ const createUser = async (req, res) => {
 //Connexion
 const failedAttempts = {}; 
 
-const MAX_FAILED_ATTEMPTS = [3, 4, 5];
-const LOCK_TIME = [5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000]; 
+const MAX_FAILED_ATTEMPTS = 3; 
+const LOCK_TIME = 5 * 60 * 1000; 
 
 const loginUser = async (req, res) => {
   const { NomOrEmail, Mot_De_Passe } = req.body;
 
-  // Sanitisation et validation
   const sanitizedNomOrEmail = validator.escape(NomOrEmail.trim());
   const sanitizedMot_De_Passe = Mot_De_Passe.trim();
   
-  // Validation des données
   if (!validator.isLength(sanitizedNomOrEmail, { min: 3 }) || !validator.isLength(sanitizedMot_De_Passe, { min: 12 })) {
     return res.status(400).json({ error: "Données d'entrée invalides" });
   }
@@ -92,6 +87,11 @@ const loginUser = async (req, res) => {
       return res.json({ error: "Mot de passe incorrect" });
     }
 
+    if (utilisateur.Email !== sanitizedNomOrEmail && utilisateur.Nom !== sanitizedNomOrEmail) {
+      handleFailedAttempt(sanitizedNomOrEmail);
+      return res.json({ error: "Nom d'utilisateur ou email incorrect" });
+    }
+
     resetFailedAttempts(sanitizedNomOrEmail);
     const accessToken = sign(
       { Nom: utilisateur.Nom, Id_Utilisateur: utilisateur.Id_Utilisateur }, 
@@ -115,15 +115,11 @@ function handleFailedAttempt(NomOrEmail) {
   if (!failedAttempts[NomOrEmail]) {
     failedAttempts[NomOrEmail] = { attempts: 0, lockUntil: null };
   }
+
   failedAttempts[NomOrEmail].attempts += 1;
 
-  const attempts = failedAttempts[NomOrEmail].attempts;
-  if (attempts === MAX_FAILED_ATTEMPTS[0]) {
-    failedAttempts[NomOrEmail].lockUntil = Date.now() + LOCK_TIME[0];
-  } else if (attempts === MAX_FAILED_ATTEMPTS[1]) {
-    failedAttempts[NomOrEmail].lockUntil = Date.now() + LOCK_TIME[1];
-  } else if (attempts >= MAX_FAILED_ATTEMPTS[2]) {
-    failedAttempts[NomOrEmail].lockUntil = Date.now() + LOCK_TIME[2];
+  if (failedAttempts[NomOrEmail].attempts >= MAX_FAILED_ATTEMPTS) {
+    failedAttempts[NomOrEmail].lockUntil = Date.now() + LOCK_TIME;
   }
 }
 
@@ -139,7 +135,6 @@ function resetFailedAttempts(NomOrEmail) {
     failedAttempts[NomOrEmail] = { attempts: 0, lockUntil: null };
   }
 }
-
 
 //Déconnexion
 const logoutUser = async (req, res) => {
