@@ -93,15 +93,18 @@ const loginUser = async (req, res) => {
     }
 
     resetFailedAttempts(sanitizedNomOrEmail);
+    
     const accessToken = sign(
       { Nom: utilisateur.Nom, Id_Utilisateur: utilisateur.Id_Utilisateur }, 
-      "importantsecret"
+      process.env.SECRET_KEY,
+      { expiresIn: process.env.JWT_EXPIRATIONS }  
     );
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000  
     });
 
     res.json({ success: true });
