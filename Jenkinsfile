@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git branch: '(6)LastFix', url: 'https://github.com/eva-dpr2004/Harmonia_Server.git'
+                git branch: 'test', url: 'https://github.com/eva-dpr2004/Harmonia_Server.git'
             }
         }
         stage('Build') {
