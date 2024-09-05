@@ -20,7 +20,6 @@ pipeline {
             steps {
                 sh '''
                     ./node_modules/.bin/jest
-                    npm run test
                 '''
             }
         }
