@@ -4,6 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest",
+    "build": "",
     "start": "nodemon server.js"
   },
   "author": "",

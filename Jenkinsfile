@@ -6,14 +6,13 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git branch: 'main', url: 'https://github.com/eva-dpr2004/Harmonia_Server'
+                git branch: '(6)LastFix', url: 'https://github.com/eva-dpr2004/Harmonia_Server.git'
             }
         }
         stage('Build') {
             steps {
                 sh '''
                     npm install
-                    npm run build
                 '''
             }
         }
@@ -37,4 +36,3 @@ pipeline {
         }
     }
 }
- 
