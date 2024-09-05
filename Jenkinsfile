@@ -19,6 +19,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
+                    ./node_modules/.bin/jest
                     npm run test
                 '''
             }
