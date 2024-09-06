@@ -58,7 +58,7 @@ function isValidActivityDuration(startTime, endTime) {
   const debutDate = new Date(`1970-01-01T${startTime}:00Z`);
   const finDate = new Date(`1970-01-01T${endTime}:00Z`);
 
-  return finDate >= debutDate;  // retourner false si l'heure de fin est avant l'heure de début
+  return finDate >= debutDate;  // return false si l'heure de fin est avant l'heure de début
 }
 
 module.exports = { isValidEmail, isValidName, isValidPassword, isValidAnimalName, isValidDate, isValidTime, isValidActivityDuration };

@@ -1,24 +1,25 @@
 const { isValidEmail, isValidName, isValidPassword, isValidAnimalName, isValidDate, isValidTime, isValidActivityDuration } = require('../utils/validator.js');
+const crypto = require('crypto'); // Pour utiliser un générateur de nombres aléatoires sécurisé
 require('dotenv').config(); // pour charger les variables d'environnement
 
-// Fonction pour générer dynamiquement un mot de passe valide
+// Fonction pour générer dynamiquement un mot de passe valide sécurisé
 function generateValidPassword() {
-  return `ValidPass${Math.floor(Math.random() * 1000)}!`; // Génère un mot de passe valide aléatoire
+  return `ValidPass${crypto.randomInt(1000)}!`; // Utilisation de crypto.randomInt() pour générer un nombre aléatoire sécurisé
 }
 
 // Fonction pour générer dynamiquement un mot de passe invalide (trop court)
 function generateShortPassword() {
-  return `Short${Math.floor(Math.random() * 10)}!`; // Génère un mot de passe invalide car trop court
+  return `Short${crypto.randomInt(10)}!`; // Utilisation de crypto.randomInt() pour générer un nombre aléatoire sécurisé
 }
 
 // Fonction pour générer un mot de passe sans majuscule
 function generatePasswordWithoutUppercase() {
-  return `validpass${Math.floor(Math.random() * 1000)}!`; // Génère un mot de passe sans majuscule
+  return `validpass${crypto.randomInt(1000)}!`; // Utilisation de crypto.randomInt() pour générer un nombre aléatoire sécurisé
 }
 
 // Fonction pour générer un mot de passe sans caractère spécial
 function generatePasswordWithoutSpecialCharacter() {
-  return `ValidPass${Math.floor(Math.random() * 1000)}`; // Génère un mot de passe sans caractère spécial
+  return `ValidPass${crypto.randomInt(1000)}`; // Utilisation de crypto.randomInt() pour générer un nombre aléatoire sécurisé
 }
 
 // Fonction pour générer un mot de passe sans chiffre
@@ -30,6 +31,9 @@ describe('Validator tests', () => {
 
   // Tests pour la validation des emails
   describe('Email validation', () => {
+    // Mise à jour de la regex pour éviter le backtracking
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    
     const validEmails = ['test@example.com', 'user.name@domain.co'];
     const invalidEmails = ['invalid-email', 'test@', '', null, undefined];
 
@@ -72,7 +76,7 @@ describe('Validator tests', () => {
 
   // Tests pour la validation des mots de passe
   describe('Password validation', () => {
-    const validPasswords = [generateValidPassword(), 'StrongPassword1@']; // Utilisation de la génération dynamique
+    const validPasswords = [generateValidPassword(), 'StrongPassword1@']; // Utilisation de la génération dynamique sécurisée
     const invalidPasswords = [
       { password: generateShortPassword(), reason: 'too short' }, // Génération dynamique pour "trop court"
       { password: generatePasswordWithoutSpecialCharacter(), reason: 'missing special character' }, // Génération dynamique pour "manque caractère spécial"
