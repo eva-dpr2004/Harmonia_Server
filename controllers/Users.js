@@ -11,11 +11,19 @@ const createUser = async (req, res) => {
 
   const sanitizedNom = validator.escape(Nom.trim());
   const sanitizedEmail = validator.normalizeEmail(Email.trim());
-  
-  if (!validator.isLength(sanitizedNom, { min: 3, max: 15 }) ||
-      !validator.isAlphanumeric(sanitizedNom.replace(/[^a-zA-Z0-9]/g, '')) ||
-      !validator.isEmail(sanitizedEmail) ||
-      !validator.isLength(Mot_De_Passe, { min: 12 })) {
+
+  if (
+    !validator.isLength(sanitizedNom, { min: 3, max: 15 }) || 
+    !/^[A-Za-zÀ-ÖØ-öø-ÿ0-9-_' ]*$/.test(sanitizedNom) || 
+    sanitizedNom.replace(/\s/g, '').length < 3 || 
+    sanitizedNom.replace(/\s/g, '').length > 100 || 
+    /(?:[A-Z]{2,})/.test(sanitizedNom) || 
+    /(DROP\s+TABLE|SELECT|DELETE|INSERT|UPDATE|CREATE|ALTER|EXEC)/i.test(sanitizedNom) || 
+    !validator.isEmail(sanitizedEmail) || 
+    !validator.isLength(sanitizedEmail, { max: 320 }) || 
+    !validator.isLength(Mot_De_Passe, { min: 12, max: 255 }) || 
+    !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\^$*.[\]{}()?\-"!@#%&/,><':;|_~`])\S{12,}$/.test(Mot_De_Passe) 
+  ) {
     return res.status(400).json({ error: "Données d'entrée invalides" });
   }
 
