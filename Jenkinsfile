@@ -29,8 +29,9 @@ pipeline {
                     sonar-scanner \
                     -Dsonar.projectKey=Back-end \
                     -Dsonar.sources=. \
-                    -Dsonar.host.url=http://sonarqube_container:9000 \
+                    -Dsonar.host.url=http://172.20.0.4:9000 \
                     -Dsonar.token=sqp_5df442aff8fc7daa3ba1d15745a7ef9af778aa5d
+                    -Dsonar.branch.name=test
                 '''
             }
         }
