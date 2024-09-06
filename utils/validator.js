@@ -2,7 +2,8 @@ const validator = require('validator');
 
 // Validation pour les emails
 function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Mise à jour de la regex pour éviter le backtracking excessif
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return emailRegex.test(email);
 }
 
