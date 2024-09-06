@@ -1,14 +1,29 @@
 const { isValidEmail, isValidName, isValidPassword, isValidAnimalName, isValidDate, isValidTime, isValidActivityDuration } = require('../utils/validator.js');
 require('dotenv').config(); // pour charger les variables d'environnement
 
-// Fonction pour générer dynamiquement un mot de passe de test valide
+// Fonction pour générer dynamiquement un mot de passe valide
 function generateValidPassword() {
   return `ValidPass${Math.floor(Math.random() * 1000)}!`; // Génère un mot de passe valide aléatoire
 }
 
-// Fonction pour générer dynamiquement un mot de passe de test invalide
-function generateInvalidPassword() {
-  return `InvalidPass${Math.floor(Math.random() * 1000)}`; // Génère un mot de passe invalide aléatoire
+// Fonction pour générer dynamiquement un mot de passe invalide (trop court)
+function generateShortPassword() {
+  return `Short${Math.floor(Math.random() * 10)}!`; // Génère un mot de passe invalide car trop court
+}
+
+// Fonction pour générer un mot de passe sans majuscule
+function generatePasswordWithoutUppercase() {
+  return `validpass${Math.floor(Math.random() * 1000)}!`; // Génère un mot de passe sans majuscule
+}
+
+// Fonction pour générer un mot de passe sans caractère spécial
+function generatePasswordWithoutSpecialCharacter() {
+  return `ValidPass${Math.floor(Math.random() * 1000)}`; // Génère un mot de passe sans caractère spécial
+}
+
+// Fonction pour générer un mot de passe sans chiffre
+function generatePasswordWithoutNumber() {
+  return `ValidPass!`; // Génère un mot de passe sans chiffre
 }
 
 describe('Validator tests', () => {
@@ -59,10 +74,10 @@ describe('Validator tests', () => {
   describe('Password validation', () => {
     const validPasswords = [generateValidPassword(), 'StrongPassword1@']; // Utilisation de la génération dynamique
     const invalidPasswords = [
-      { password: 'Short12!', reason: 'too short' },
-      { password: 'ValidPass123', reason: 'missing special character' },
-      { password: 'validpass123!', reason: 'missing uppercase letter' },
-      { password: generateInvalidPassword(), reason: 'missing number' } // Utilisation de la génération dynamique
+      { password: generateShortPassword(), reason: 'too short' }, // Génération dynamique pour "trop court"
+      { password: generatePasswordWithoutSpecialCharacter(), reason: 'missing special character' }, // Génération dynamique pour "manque caractère spécial"
+      { password: generatePasswordWithoutUppercase(), reason: 'missing uppercase letter' }, // Génération dynamique pour "manque majuscule"
+      { password: generatePasswordWithoutNumber(), reason: 'missing number' } // Génération dynamique pour "manque chiffre"
     ];
 
     validPasswords.forEach(password => {
@@ -80,7 +95,6 @@ describe('Validator tests', () => {
 
   // Tests pour la validation des animaux (nom, date, poids, habitat)
   describe('Animal validation', () => {
-    // Nom de l'animal
     const validAnimalNames = ['Rex', 'Luna', 'Toby'];
     const invalidAnimalNames = [
       { name: 'No', reason: 'too short' },
