@@ -1,4 +1,15 @@
 const { isValidEmail, isValidName, isValidPassword, isValidAnimalName, isValidDate, isValidTime, isValidActivityDuration } = require('../utils/validator.js');
+require('dotenv').config(); // pour charger les variables d'environnement
+
+// Fonction pour générer dynamiquement un mot de passe de test valide
+function generateValidPassword() {
+  return `ValidPass${Math.floor(Math.random() * 1000)}!`; // Génère un mot de passe valide aléatoire
+}
+
+// Fonction pour générer dynamiquement un mot de passe de test invalide
+function generateInvalidPassword() {
+  return `InvalidPass${Math.floor(Math.random() * 1000)}`; // Génère un mot de passe invalide aléatoire
+}
 
 describe('Validator tests', () => {
 
@@ -46,12 +57,12 @@ describe('Validator tests', () => {
 
   // Tests pour la validation des mots de passe
   describe('Password validation', () => {
-    const validPasswords = ['ValidPass123!', 'StrongPassword1@'];
+    const validPasswords = [generateValidPassword(), 'StrongPassword1@']; // Utilisation de la génération dynamique
     const invalidPasswords = [
       { password: 'Short12!', reason: 'too short' },
       { password: 'ValidPass123', reason: 'missing special character' },
       { password: 'validpass123!', reason: 'missing uppercase letter' },
-      { password: 'ValidPass!', reason: 'missing number' }
+      { password: generateInvalidPassword(), reason: 'missing number' } // Utilisation de la génération dynamique
     ];
 
     validPasswords.forEach(password => {
