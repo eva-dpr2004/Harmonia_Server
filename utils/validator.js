@@ -1,4 +1,4 @@
-const validator = require('validator');
+const validator = require('validator');  
 
 // Validation pour les emails
 function isValidEmail(email) {
@@ -41,28 +41,24 @@ function isValidAnimalName(name) {
   );
 }
 
-// Validation des dates
+// Validation des dates (doivent être passées ou présentes)
 function isValidDate(date) {
   const today = new Date().toISOString().split('T')[0];
   return validator.isDate(date) && !validator.isAfter(date, today);
 }
 
-// Validation des heures
+// Validation des heures (format 24h: hh:mm)
 function isValidTime(time) {
   const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
   return timeRegex.test(time);
 }
 
-// Validation de la durée de l'activité
+// Validation de la durée de l'activité (l'heure de fin doit être après l'heure de début)
 function isValidActivityDuration(startTime, endTime) {
   const debutDate = new Date(`1970-01-01T${startTime}:00Z`);
   const finDate = new Date(`1970-01-01T${endTime}:00Z`);
 
-  if (finDate < debutDate) {
-    return false;  // Retourner false si l'heure de fin est avant l'heure de début
-  }
-
-  return true;
+  return finDate >= debutDate;  // retourner false si l'heure de fin est avant l'heure de début
 }
 
 module.exports = { isValidEmail, isValidName, isValidPassword, isValidAnimalName, isValidDate, isValidTime, isValidActivityDuration };
