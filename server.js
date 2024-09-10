@@ -23,8 +23,9 @@ const activitiesRouter = require("./routes/Activities");
 app.use("/activities", activitiesRouter);
 
 // PORT
-db.sequelize.sync({ alter: false }).then(() => {
-    app.listen(process.env.PORT || 3001, () => {
-        console.log('Server is running on port 3001');
+db.sequelize.sync().then(() => {
+    app.listen(3001, () => {
+        console.log('Server tourne sur le port 3001');
     });
 });
+

@@ -1,6 +1,0 @@
-build:
-  docker:
-    web: Dockerfile  # Indique à Heroku d'utiliser le Dockerfile pour construire l'image
-
-run:
-  web: node server.js  # Indique à Heroku de démarrer le serveur avec cette commande
