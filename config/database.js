@@ -1,17 +1,21 @@
 const Sequelize = require('sequelize');
 
-// Utiliser la variable d'environnement CLEARDB_DATABASE_URL sur Heroku
-const databaseUrl = process.env.CLEARDB_DATABASE_URL || 'mysql://username:password@localhost:3306/mydatabase';
+// Obtenir l'URL de ClearDB à partir de la variable d'environnement sur Heroku
+const databaseUrl = process.env.CLEARDB_DATABASE_URL;
 
-// Configurer Sequelize avec l'URL de ClearDB
+if (!databaseUrl) {
+  throw new Error('CLEARDB_DATABASE_URL is not defined in the environment variables');
+}
+
+// Créer une instance Sequelize avec l'URL ClearDB
 const sequelize = new Sequelize(databaseUrl, {
   dialect: 'mysql',
   dialectOptions: {
     ssl: {
-      rejectUnauthorized: false // Nécessaire pour ClearDB
-    }
+      rejectUnauthorized: false, // Certains serveurs ClearDB nécessitent SSL
+    },
   },
-  logging: false // Optionnel : désactiver les logs SQL
+  logging: false, // Désactiver les logs de requêtes SQL
 });
 
 module.exports = sequelize;
