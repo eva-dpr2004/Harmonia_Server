@@ -1,17 +1,26 @@
-const { Sequelize } = require('sequelize');
-const config = require('./config'); // Adjust path if needed
+const Sequelize = require('sequelize');
+const config = require('./config/config'); // Assure-toi du chemin correct
 
-const env = process.env.NODE_ENV || 'development'; // Get environment (default to development)
-const dbConfig = config[env]; // Get the correct environment config
+const env = process.env.NODE_ENV || 'development';
+const dbConfig = config[env];
 
 let sequelize;
-
 if (dbConfig.use_env_variable) {
-  // In production, use the environment variable for database URL
-  sequelize = new Sequelize(process.env[dbConfig.use_env_variable], dbConfig);
+  // Utilise l'URL de ClearDB pour la production
+  sequelize = new Sequelize(process.env[dbConfig.use_env_variable], {
+    dialect: 'mysql',
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false
+      }
+    }
+  });
 } else {
-  // In development or test, use the provided config values
-  sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, dbConfig);
+  // Utilise la configuration locale pour le développement
+  sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, {
+    host: dbConfig.host,
+    dialect: dbConfig.dialect
+  });
 }
 
 module.exports = sequelize;
