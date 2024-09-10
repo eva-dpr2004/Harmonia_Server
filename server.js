@@ -1,16 +1,20 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const app = express();
 const cors = require('cors');
+require('dotenv').config(); // Charger les variables d'environnement
 
+const app = express();
+app.disable('x-powered-by');
+
+// Middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: 'https://harmonia-client-git-test-eva-dprs-projects.vercel.app', credentials: true }));
 
-// DB
-const db = require('./models');
+// Importer la configuration de la base de données
+const db = require('./config/database'); // Connexion à la base de données
 
-// ROUTERS
+// ROUTES
 const usersRouter = require("./routes/Users");
 app.use("/auth", usersRouter);
 
@@ -20,10 +24,19 @@ app.use("/animals", animalsRouter);
 const activitiesRouter = require("./routes/Activities");
 app.use("/activities", activitiesRouter);
 
-// PORT
-db.sequelize.sync().then(() => {
-    app.listen(3001, () => {
-        console.log('Server tourne sur le port 3001');
-    });
+// Test route
+app.get("/", (req, res) => {
+  return res.send("Hello, welcome to Harmonia!");
 });
 
+// PORT
+const PORT = process.env.PORT || 3001;
+
+// Synchroniser la base de données et démarrer le serveur
+db.sync().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}).catch(err => {
+  console.error("Unable to connect to the database:", err);
+});
