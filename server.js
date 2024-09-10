@@ -23,7 +23,7 @@ const activitiesRouter = require("./routes/Activities");
 app.use("/activities", activitiesRouter);
 
 app.get("/", (req, res) => {
-    return res.send("Merci Quentin");
+    return res.send("bonzour ze zuis quentin");
 });
 
 // PORT
