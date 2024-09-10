@@ -3,7 +3,18 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 const { Sequelize } = require('sequelize');
-const sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL);
+
+// Utiliser l'URL ClearDB fournie par Heroku
+const sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL, {
+  dialect: 'mysql',
+  dialectOptions: {
+    ssl: {
+      rejectUnauthorized: false
+    }
+  }
+});
+
+module.exports = sequelize;
 
 require('dotenv').config(); // Charger les variables d'environnement
 
