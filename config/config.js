@@ -1,15 +1,27 @@
+require('dotenv').config(); // Load environment variables from .env
+
 module.exports = {
-    production: {
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      host: process.env.DB_HOST,
-      dialect: "mysql",
-      dialectOptions: {
-        ssl: {
-          rejectUnauthorized: false
-        }
+  "development": {
+    "username": process.env.DB_USER || "root",
+    "password": process.env.DB_PASSWORD || null,
+    "database": process.env.DB_NAME || "harmonia",
+    "host": process.env.DB_HOST || "localhost",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": process.env.DB_USER || "root",
+    "password": process.env.DB_PASSWORD || null,
+    "database": process.env.DB_NAME || "database_test",
+    "host": process.env.DB_HOST || "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "use_env_variable": "CLEARDB_DATABASE_URL", // Use the ClearDB environment variable
+    "dialect": "mysql",
+    "dialectOptions": {
+      "ssl": {
+        "rejectUnauthorized": false
       }
     }
-  };
-  
+  }
+};
