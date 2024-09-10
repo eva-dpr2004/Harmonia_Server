@@ -1,4 +1,4 @@
-require('dotenv').config(); // Load environment variables from .env
+require('dotenv').config();
 
 module.exports = {
   "development": {
@@ -12,15 +12,15 @@ module.exports = {
     "username": process.env.DB_USER || "root",
     "password": process.env.DB_PASSWORD || null,
     "database": process.env.DB_NAME || "database_test",
-    "host": process.env.DB_HOST || "127.0.0.1",
-    "dialect": process.env.DB_DIALECT || "mysql"
+    "host": "127.0.0.1",
+    "dialect": "mysql"
   },
   "production": {
-    "use_env_variable": "CLEARDB_DATABASE_URL", // Use ClearDB connection URL
+    "use_env_variable": "CLEARDB_DATABASE_URL", // Use ClearDB URL from the environment
     "dialect": "mysql",
     "dialectOptions": {
       "ssl": {
-        "rejectUnauthorized": false // For secure connection to ClearDB
+        "rejectUnauthorized": false
       }
     }
   }
