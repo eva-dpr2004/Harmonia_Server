@@ -1,24 +1,10 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const dotenv = require('dotenv');
+const db = require('./config/database'); // Importer la configuration de la base de données
 
-const { Sequelize } = require('sequelize');
-
-// Utiliser l'URL ClearDB fournie par Heroku
-const sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL, {
-  dialect: 'mysql',
-  dialectOptions: {
-    ssl: {
-      rejectUnauthorized: false
-    }
-  }
-});
-
-module.exports = sequelize;
-
-require('dotenv').config(); // Charger les variables d'environnement
-
-module.exports = sequelize;
+dotenv.config(); // Charger les variables d'environnement
 
 const app = express();
 app.disable('x-powered-by');
@@ -27,9 +13,6 @@ app.disable('x-powered-by');
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: 'https://harmonia-client-git-test-eva-dprs-projects.vercel.app', credentials: true }));
-
-// Importer la configuration de la base de données
-const db = require('./config/database'); 
 
 // ROUTES
 const usersRouter = require("./routes/Users");
@@ -48,15 +31,14 @@ app.get("/", (req, res) => {
 
 // PORT
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
 
 // Synchroniser la base de données et démarrer le serveur
-db.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+db.sync()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error("Unable to connect to the database:", err);
   });
-}).catch(err => {
-  console.error("Unable to connect to the database:", err);
-});
