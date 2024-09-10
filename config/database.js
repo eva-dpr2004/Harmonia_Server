@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 //const config = require('./config/config'); // Chemin du fichier de configuration
 
 const env = process.env.NODE_ENV || 'development'; // Détermine l'environnement (production, development, test)
-const dbConfig = config[env];
+//const dbConfig = config[env];
 
 let sequelize;
 if (dbConfig.use_env_variable) {
