@@ -7,7 +7,7 @@ require('dotenv').config();
 app.disable('x-powered-by');
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: 'https://harmonia-client-git-test-eva-dprs-projects.vercel.app/', credentials: true }));
 
 // DB
 const db = require('./models');
@@ -21,6 +21,10 @@ app.use("/animals", animalsRouter);
 
 const activitiesRouter = require("./routes/Activities");
 app.use("/activities", activitiesRouter);
+
+app.get("/", (req, res) => {
+    return res.send("Merci Quentin");
+});
 
 // PORT
 db.sequelize.sync().then(() => {
