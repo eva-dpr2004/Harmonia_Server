@@ -27,9 +27,11 @@ app.get("/", (req, res) => {
 });
 
 // PORT
+const PORT = process.env.PORT || 3001;  // Utilise le port fourni par Heroku ou 3001 en local
 db.sequelize.sync().then(() => {
-    app.listen(3001, () => {
-        console.log('Server tourne sur le port 3001');
+    app.listen(PORT, () => {
+        console.log(`Server tourne sur le port ${PORT}`);
     });
 });
+
 
