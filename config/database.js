@@ -1,7 +1,6 @@
 const { Sequelize } = require('sequelize');
-const config = require('./config.js'); // Load configuration
+const config = require('./config.js'); // Load config based on environment
 
-// Check if a specific environment variable is provided
 const env = process.env.NODE_ENV || 'development';
 const dbConfig = config[env];
 
