@@ -1,7 +1,13 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+
+const { Sequelize } = require('sequelize');
+const sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL);
+
 require('dotenv').config(); // Charger les variables d'environnement
+
+module.exports = sequelize;
 
 const app = express();
 app.disable('x-powered-by');
@@ -30,7 +36,10 @@ app.get("/", (req, res) => {
 });
 
 // PORT
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 // Synchroniser la base de données et démarrer le serveur
 db.sync().then(() => {
