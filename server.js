@@ -12,7 +12,7 @@ app.use(cookieParser());
 app.use(cors({ origin: 'https://harmonia-client-git-test-eva-dprs-projects.vercel.app', credentials: true }));
 
 // Importer la configuration de la base de données
-const db = require('./config/database'); // Connexion à la base de données
+const db = require('./config/database'); 
 
 // ROUTES
 const usersRouter = require("./routes/Users");
