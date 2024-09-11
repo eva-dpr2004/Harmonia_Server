@@ -37,13 +37,14 @@ app.get("/", (req, res) => {
 // PORT
 const PORT = process.env.PORT || 3000;
 
-// Utiliser db.sync() pour synchroniser la base de données avec les modèles
-db.sync({ force: true }) // force: true recréera les tables à chaque démarrage (utile pour le développement local uniquement)
+db.sync({ force: false }) // Ne pas forcer pour éviter de recréer des tables existantes
   .then(() => {
+    console.log("Base de données synchronisée avec succès !");
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log(`Serveur démarré sur le port ${PORT}`);
     });
   })
   .catch(err => {
-    console.error("Unable to connect to the database:", err);
+    console.error("Erreur lors de la synchronisation de la base de données :", err);
   });
+
