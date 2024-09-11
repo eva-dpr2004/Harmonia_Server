@@ -15,6 +15,7 @@ if (env === 'production') {
   // Utilisation de l'URL ClearDB en production
   sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL, {
     dialect: 'mysql',
+    logging: console.log, // Activez les logs complets SQL
     dialectOptions: {
       ssl: {
         rejectUnauthorized: false, // Connexion sécurisée
