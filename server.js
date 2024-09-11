@@ -19,7 +19,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-
 // ROUTES
 const usersRouter = require("./routes/Users");
 app.use("/auth", usersRouter);
@@ -38,8 +37,8 @@ app.get("/", (req, res) => {
 // PORT
 const PORT = process.env.PORT || 3000;
 
-// Synchroniser la base de données et démarrer le serveur
-db.sync()
+// Utiliser db.sync() pour synchroniser la base de données avec les modèles
+db.sync({ force: true }) // force: true recréera les tables à chaque démarrage (utile pour le développement local uniquement)
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
