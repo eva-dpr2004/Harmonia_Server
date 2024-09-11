@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const db = require('./config/database'); // Importer la configuration de la base de données
+const session = require('express-session'); // Importer express-session pour gérer les sessions
 
 dotenv.config(); // Charger les variables d'environnement
 
@@ -12,7 +13,26 @@ app.disable('x-powered-by');
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: 'https://harmonia-client-git-test-eva-dprs-projects.vercel.app', credentials: true }));
+
+// Configuration CORS
+app.use(cors({
+  origin: 'https://harmonia-client-git-test-eva-dprs-projects.vercel.app', // URL du frontend déployé
+  credentials: true, // Autoriser les cookies et les headers d'authentification
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Gestion des sessions avec les cookies sécurisés
+app.use(session({
+  secret: process.env.SECRET_KEY || 'votreCleSecreteIci', // Utilisez une clé secrète sécurisée
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: true, // Utilisez 'https' pour les cookies sécurisés
+    httpOnly: true, // Les cookies ne sont pas accessibles via JavaScript
+    sameSite: 'None' // Nécessaire pour les cookies cross-site entre Vercel et Heroku
+  }
+}));
 
 // ROUTES
 const usersRouter = require("./routes/Users");
