@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 // Synchroniser la base de données et démarrer le serveur
-db.sync()
+db.sync({ alter: true }) // Utilisez force: true pour forcer la recréation des tables (perdra les données)
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
